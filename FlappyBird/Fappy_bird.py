@@ -66,6 +66,12 @@ def update_score(score, high_score):
     if score> high_score:
         high_score=score
     return high_score
+def count_score(pipes):
+    score=0
+    for pipe in pipes:
+        if pipe.x <= 100:
+            score+=0.5
+    return score
 #system variable 
 screen_width=864
 screen_height=768
@@ -167,7 +173,7 @@ while True:
         game_active = check_collision(pipe_list)
         
         # Increment score
-        score += 0.01
+        score = count_score(pipe_list)
         score_display('main game')
 
     else:
