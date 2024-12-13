@@ -70,7 +70,7 @@ def count_score(pipes):
     for pipe, passed in pipes:
         if pipe.x <= 100 and not passed:  # Kiểm tra nếu chim đã vượt qua ống
             pipes[pipes.index((pipe, passed))] = (pipe, True)  # Đánh dấu ống đã được qua
-            score += 2  # Tăng điểm khi chim vượt qua ống
+            score += 0.5  # Tăng điểm khi chim vượt qua ống
             score_sound.play()  # Phát âm thanh khi vượt qua ống
     return score
 
