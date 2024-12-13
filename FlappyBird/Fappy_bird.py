@@ -74,7 +74,7 @@ pygame.display.set_caption('Flappy bird')
 clock = pygame.time.Clock()
 game_font=pygame.font.Font('04B_19.ttf',40)
 #tao variable cho tro choi
-gravity = 0.25
+gravity = 0.15
 bird_movement = 0
 game_active=False
 score=0
@@ -132,7 +132,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and game_active:
                 bird_movement = 0  # reset gravity effect
-                bird_movement = -9  # jump the bird up
+                bird_movement = -5  # jump the bird up
                 flap_sound.play()
                 # Trigger bird flap animation on space press
 
