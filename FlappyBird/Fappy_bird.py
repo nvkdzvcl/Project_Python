@@ -2,9 +2,9 @@ import pygame , sys, random
 pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
 pygame.init()
 #ham ve floor
-def draw_floor():
-    screen.blit(floor, (floor_x_pos, 650)) # nen dat 1 
-    screen.blit(floor, (floor_x_pos + 432, 650)) # nen dat 2
+# def draw_floor():
+#     screen.blit(floor, (floor_x_pos, 700)) # nen dat 1 
+#     screen.blit(floor, (floor_x_pos + 864, 700)) # nen dat 2
 #ham tao pipe 
 def create_pipe():
     random_pipe_pos= random.choice(pipe_height)
@@ -14,7 +14,7 @@ def create_pipe():
 #ham di chuyen pipe
 def move_pipe(pipes):      
     for pipe in pipes:
-        pipe.centerx-=5 #pipe lui ve truc x sau moi 1,2s cu the la 5 moi 1,2s
+        pipe.centerx-=7 #pipe lui ve truc x sau moi 1,2s cu the la 5 moi 1,2s
     return pipes
 # ve pipe vao screenscreen
 def draw_pipe(pipes): #screen blit la de chen anh vao screen , screen_blit chi co the lay gia tri voi 1 phan tu co 1 gia tri thoi 
@@ -74,7 +74,7 @@ pygame.display.set_caption('Flappy bird')
 clock = pygame.time.Clock()
 game_font=pygame.font.Font('04B_19.ttf',40)
 #tao variable cho tro choi
-gravity = 0.15
+gravity = 0.7
 bird_movement = 0
 game_active=False
 score=0
@@ -111,8 +111,8 @@ pipe_surface= pygame.transform.scale(pipe_surface, ( 50,500))
 pipe_list=[]
 # create pipe timmer - spawm time
 spawnpipe=pygame.USEREVENT #tao 1 eventevent
-pygame.time.set_timer(spawnpipe,1200) # cua moi 1,2s thi event spawpipe se xuat hien
-pipe_height=[200,300,400]
+pygame.time.set_timer(spawnpipe,1000) # cua moi 1,2s thi event spawpipe se xuat hien
+pipe_height=[200,250,300,350,400]
 #tao man hinh game over 
 game_over_surface=pygame.transform.scale2x( pygame.image.load('assets\message.png')).convert_alpha() 
 game_over_rect=game_over_surface.get_rect(center=(432,384))
@@ -123,75 +123,72 @@ score_sound=pygame.mixer.Sound( 'sound\sfx_point.wav')
 #while loop cua game
 while True:
     for event in pygame.event.get():
-        # quit game
         if event.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()  # stop the entire program immediately
+            sys.exit()
         
-        # bird interactions
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE and game_active:
-                bird_movement = 0  # reset gravity effect
-                bird_movement = -5  # jump the bird up
+                bird_movement = 0
+                bird_movement = -8
                 flap_sound.play()
-                # Trigger bird flap animation on space press
-
-                game_run = True  # Start the game when space is pressed
+                
             if event.key == pygame.K_SPACE and not game_active:
                 game_active = True
                 pipe_list.clear()
-                bird_rect.center = (100, 200) 
+                bird_rect.center = (100, 200)
                 bird_movement = 0
                 score = 0
-                game_run = True  # Restart the game when space is pressed after game over
+                game_run = True
 
-        if event.type == spawnpipe:
-            if game_run:  # Only generate pipes if game_run is True
-                pipe_list.extend(create_pipe())
+        if event.type == spawnpipe and game_active:
+            pipe_list.extend(create_pipe())
 
-        # Handle bird animation flap timer
-        if event.type == birdflap :
-            if game_active or not game_active:
-                if bird_index < 2:
-                    bird_index += 1
-                else:
-                    bird_index = 0
-                bird, bird_rect = bird_animation()
+        if event.type == birdflap:
+            if bird_index < 2:
+                bird_index += 1
+            else:
+                bird_index = 0
+            bird, bird_rect = bird_animation()
 
-    # create background
+    # Create background
     screen.blit(bg_day, (0, 0))
+    
     if game_active:
-        # bird movement
+        # Bird movement
         bird_movement += gravity
         rotated_bird = rotate_bird(bird)
         bird_rect.centery += bird_movement
         screen.blit(rotated_bird, bird_rect)
+
+        # Pipe movement and collision
+        pipe_list = move_pipe(pipe_list)
+        draw_pipe(pipe_list)
         game_active = check_collision(pipe_list)
         
-        # create and move pipes
-        if game_run:  # Only move pipes if game_run is True
-            pipe_list = move_pipe(pipe_list)
-            draw_pipe(pipe_list)
-            score += 0.01
-            score_display('main game')
-    else:
+        # Increment score
+        score += 0.01
+        score_display('main game')
 
+    else:
+        # Game over screen
         screen.blit(bird, bird_rect)
         screen.blit(game_over_surface, game_over_rect)
         high_score = update_score(score, high_score)
         score_display('game_over')
 
-        # Reset game_run after game over, to prevent pipes from continuing
+        # Reset game_run after game over
         game_run = False
 
-    # move floor to the left
-    floor_x_pos -= 1
-    screen.blit(floor, (floor_x_pos, 700))
+    # Move floor
+    screen.blit(floor, (floor_x_pos, 700)) # nen dat 1 
+    floor_x_pos -= 2
     
-    # reset floor position when it goes completely off screen
-    if abs(floor_x_pos) > 35:
+    if abs(floor_x_pos)>40:
         floor_x_pos = 0
-        screen.blit(floor, (floor_x_pos, 700))
-
+ 
     pygame.display.update()
-    clock.tick(120)
+
+    # Adjust the frame rate (Try 60 fps for smoother performance)
+    clock.tick(60)  # Try using 60 instead of 140
+pygame.quit()
