@@ -119,9 +119,9 @@ class Game(GameEntity):
         self.screen.blit(changeskin_surface, changeskin_rect)  # Vẽ nút lên màn hình
 
     
-    def button_bg_display(self):
+    def button_bg_display(self,y_position=370):
         change_bg_surface = self.game_font.render(f'Background', True, WHITE)  # Hiển thị phần thay đổi map
-        change_bg_rect = change_bg_surface.get_rect(center=(432, 370))  # Vị trí của nút change map
+        change_bg_rect = change_bg_surface.get_rect(center=(432, y_position))  # Vị trí của nút change map
         self.screen.blit(change_bg_surface, change_bg_rect)  # Vẽ nút lên màn hình
 
     def update_score(self):
@@ -167,7 +167,26 @@ class Game(GameEntity):
             red_bird_rect = red_bird.get_rect(center = (648,370))
             self.screen.blit(red_bird, red_bird_rect)
             
-            
+    def display_option_bg(self, click_changebg):
+        if self.click_changebg==True:
+            self.button_bg_display(170)
+            bg_1 = pygame.image.load(r'assets/background-day.png')
+            bg_1 = pygame.transform.scale(bg_1, (200,300))
+            bg_1_rect = bg_1.get_rect(center = (150,370))
+            self.screen.blit(bg_1, bg_1_rect)
+            pygame.draw.rect(self.screen, (0, 0, 0), bg_1_rect, 5)
+
+            bg_2 = pygame.image.load(r'assets/background-night.png')
+            bg_2 = pygame.transform.scale(bg_2,  (200,300))
+            bg_2_rect = bg_2.get_rect(center = (425,370))
+            self.screen.blit(bg_2, bg_2_rect)
+            pygame.draw.rect(self.screen, (0, 0, 0), bg_2_rect, 5)
+
+            bg_3 = pygame.image.load(r'assets/forest.png')
+            bg_3 = pygame.transform.scale( bg_3, (200,300))
+            bg_3_rect =  bg_3.get_rect(center = (700,370))
+            self.screen.blit( bg_3,  bg_3_rect)
+            pygame.draw.rect(self.screen, (0, 0, 0), bg_3_rect, 5)
 
     
     def run(self):
@@ -211,7 +230,7 @@ class Game(GameEntity):
                         if (312 < mouse_x < 547) and (350 <= mouse_y <= 391) and self.click_changebg == False and self.click_changeskin == False:
                             self.click_changebg = True
                             self.option_menu = True
-                            print(self.option_menu)
+                            print(self.click_changebg)
                         
                         if self.click_changeskin == True and self.option_menu == True:
                             if (196 < mouse_x < 236) and (350 < mouse_y < 390):
@@ -264,7 +283,7 @@ class Game(GameEntity):
                     self.button_bg_display()
                 else:
                     self.display_option_skin(self.click_changeskin)
-            
+                    self.display_option_bg(self.click_changebg)
                 
                 
 
