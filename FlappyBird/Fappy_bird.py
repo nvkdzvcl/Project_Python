@@ -2,6 +2,11 @@ import pygame
 import sys
 import random
 
+#màu sắc
+WHITE = (255,255,255)
+YELLOW = (255,255,0)
+BLUE = (0,0,255)
+RED = (255,0,0)
 # Lớp GameEntity cơ sở
 class GameEntity:
     def __init__(self, screen):
@@ -51,7 +56,6 @@ class Game(GameEntity):
         # Tải tài nguyên trò chơi (hình ảnh và âm thanh)
         self.bg_day = self.load_image(r'assets\background-day.png', (864, 768))  # Hình nền
         self.floor = self.load_image(r'assets\ground.png', (950, 100))  # Hình nền dưới đất
-        self.game_over_surface = pygame.transform.scale2x(self.load_image('assets\message.png'))  # Hình ảnh game over
         
         # Vị trí cuộn của nền dưới đất
         self.floor_x_pos = 0
@@ -61,7 +65,6 @@ class Game(GameEntity):
         self.pipe = Pipe(self.screen)  # Khởi tạo đối tượng ống
 
         # Vị trí của màn hình game over
-        self.game_over_rect = self.game_over_surface.get_rect(center=(432, 384))
 
         # Tải âm thanh
         self.flap_sound = pygame.mixer.Sound('sound\sfx_wing.wav')  # Âm thanh vỗ cánh
@@ -90,8 +93,19 @@ class Game(GameEntity):
             
             # Điểm cao nhất
             high_score_surface = self.game_font.render(f'Highscore: {int(self.high_score)}', True, (255, 255, 255))
-            high_score_rect = high_score_surface.get_rect(center=(432, 670))
+            high_score_rect = high_score_surface.get_rect(center=(432, 170))
             self.screen.blit(high_score_surface, high_score_rect)
+    
+    
+    def changeskin_display(self):
+        changeskin_surface = self.game_font.render(f'Skin', True, YELLOW)  # Hiển thị phần thay đổi skin, mặc định là màu vàng
+        changeskin_rect = changeskin_surface.get_rect(center=(432, 270))  # Vị trí của nút change skin
+        self.screen.blit(changeskin_surface, changeskin_rect)  # Vẽ nút lên màn hình
+
+    def change_bg_display(self):
+        change_bg_surface = self.game_font.render(f'Background', True, WHITE)  # Hiển thị phần thay đổi map
+        change_bg_rect = change_bg_surface.get_rect(center=(432, 370))  # Vị trí của nút change map
+        self.screen.blit(change_bg_surface, change_bg_rect)  # Vẽ nút lên màn hình
 
     def update_score(self):
         """Cập nhật và trả về điểm cao nhất"""
@@ -170,7 +184,8 @@ class Game(GameEntity):
             else:
                 self.high_score = self.update_score()  # Cập nhật điểm cao nhất
                 self.score_display('game_over')
-                self.screen.blit(self.game_over_surface, self.game_over_rect)
+                self.changeskin_display()
+                self.change_bg_display()
 
             # Cuộn nền dưới đất
             self.screen.blit(self.floor, (self.floor_x_pos, 700))
