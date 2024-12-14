@@ -169,24 +169,42 @@ class Game(GameEntity):
             
     def display_option_bg(self, click_changebg):
         if self.click_changebg==True:
-            self.button_bg_display(170)
+            self.button_bg_display(50)
             bg_1 = pygame.image.load(r'assets/background-day.png')
-            bg_1 = pygame.transform.scale(bg_1, (200,300))
-            bg_1_rect = bg_1.get_rect(center = (150,370))
+            bg_1 = pygame.transform.scale(bg_1, (210,270))
+            bg_1_rect = bg_1.get_rect(center = (150,240))
             self.screen.blit(bg_1, bg_1_rect)
             pygame.draw.rect(self.screen, (0, 0, 0), bg_1_rect, 5)
 
-            bg_2 = pygame.image.load(r'assets/background-night.png')
-            bg_2 = pygame.transform.scale(bg_2,  (200,300))
-            bg_2_rect = bg_2.get_rect(center = (425,370))
+            bg_2 = pygame.image.load(r'assets/starbright.jpg')
+            bg_2 = pygame.transform.scale(bg_2,  (210,270))
+            bg_2_rect = bg_2.get_rect(center = (425,240))
             self.screen.blit(bg_2, bg_2_rect)
             pygame.draw.rect(self.screen, (0, 0, 0), bg_2_rect, 5)
 
             bg_3 = pygame.image.load(r'assets/frog.png')
-            bg_3 = pygame.transform.scale( bg_3, (200,300))
-            bg_3_rect =  bg_3.get_rect(center = (700,370))
-            self.screen.blit( bg_3,  bg_3_rect)
+            bg_3 = pygame.transform.scale(bg_3, (210,270))
+            bg_3_rect =  bg_3.get_rect(center = (700,240))
+            self.screen.blit(bg_3,  bg_3_rect)
             pygame.draw.rect(self.screen, (0, 0, 0), bg_3_rect, 5)
+
+            bg_4 = pygame.image.load(r'assets/nhamay.png')
+            bg_4 = pygame.transform.scale( bg_4, (210,270))
+            bg_4_rect =  bg_4.get_rect(center = (150,550))
+            self.screen.blit( bg_4,  bg_4_rect)
+            pygame.draw.rect(self.screen, (0, 0, 0), bg_4_rect, 5)
+
+            bg_5 = pygame.image.load(r'assets/thanhpho.png')
+            bg_5 = pygame.transform.scale( bg_5, (210,270))
+            bg_5_rect =  bg_5.get_rect(center = (425,550))
+            self.screen.blit(bg_5,  bg_5_rect)
+            pygame.draw.rect(self.screen, (0, 0, 0), bg_5_rect, 5)
+
+            bg_6 = pygame.image.load(r'assets/hoaanhdao.png')
+            bg_6 = pygame.transform.scale(bg_6, (210,270))
+            bg_6_rect =  bg_6.get_rect(center = (700,550))
+            self.screen.blit(bg_6,  bg_6_rect)
+            pygame.draw.rect(self.screen, (0, 0, 0), bg_6_rect, 5)
 
     
     def run(self):
@@ -235,16 +253,38 @@ class Game(GameEntity):
                         if self.click_changeskin == True and self.option_menu == True:
                             if (196 < mouse_x < 236) and (350 < mouse_y < 390):
                                 self.bird.bird_skin = 'yellow'
-                                print(self.bird.bird_skin)
                             if (412 < mouse_x < 452) and (350 < mouse_y < 390):
                                 self.bird.bird_skin = 'blue'
-                                print(self.bird.bird_skin)
                             if (628 < mouse_x < 668) and (350 < mouse_y < 390):
                                 self.bird.bird_skin = 'red'
-                                print(self.bird.bird_skin)
+
+                        if self.click_changebg == True and self.option_menu == True:
+                            if (45 <= mouse_x <= 255) and (105 <= mouse_y <= 375):
+                                print('bg1')
+                                self.bg_day = self.load_image('assets\background-day.png',(864,768))
+                            if (320 <= mouse_x <= 530) and (105 <= mouse_y <= 375):
+                                self.bg_day = self.load_image('assets\starbright.jpg',(864,768))
+                                print('bg2')
+
+                            if (595 <= mouse_x <= 805) and (105 <= mouse_y <= 375):
+                                self.bg_day = self.load_image('assets\frog.png',(864,768))
+                                print('bg3')
+
+                            if (45 <= mouse_x <= 255) and (415 <= mouse_y <= 685):
+                                self.bg_day = self.load_image('assets\nhamay.png',(864,768))
+                                print('bg4')
+
+                            if (320 <= mouse_x <= 530) and (415 <= mouse_y <= 685):
+                                self.bg_day = self.load_image('assets\thanhpho.png',(864,768))
+                                print('bg5')
+
+                            if (595 <= mouse_x <= 805) and (415 <= mouse_y <= 685):
+                                self.bg_day = self.load_image('assets\hoaanhdao.png',(864,768))
+                                print('bg6')
 
 
-                            
+
+
                 # Tạo ống mới
                 if event.type == self.spawnpipe and self.game_active:
                     self.pipe.pipe_list.extend(self.pipe.create_pipe())
