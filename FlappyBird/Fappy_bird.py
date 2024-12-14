@@ -298,8 +298,6 @@ class Bird(GameEntity):
         self.bird_movement = 0  # Chuyển động của chim (vị trí dọc)
         self.bird_skin='yellow'
 
-        self.bird, self.rect=self.skin_change(self.bird_skin)
-
     def bird_animation(self):
         """Hoạt động vỗ cánh của chim"""
         new_bird, new_bird_rect =self.skin_change(self.bird_skin)
@@ -312,6 +310,7 @@ class Bird(GameEntity):
 
     def update(self, bird_movement, flap_sound):
         """Cập nhật vị trí và xoay chim"""
+        self.bird, self.rect=self.skin_change(self.bird_skin)
         self.bird_movement += 0.7  # Hằng số trọng lực
         rotated_bird = self.rotate_bird()
         self.rect.centery += self.bird_movement  # Cập nhật vị trí chim
