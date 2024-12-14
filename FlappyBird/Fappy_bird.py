@@ -7,6 +7,10 @@ WHITE = (255,255,255)
 YELLOW = (255,255,0)
 BLUE = (0,0,255)
 RED = (255,0,0)
+
+
+#skin_color_flag
+skin = 'yellow'
 # Lớp GameEntity cơ sở
 class GameEntity:
     def __init__(self, screen):
@@ -34,6 +38,7 @@ class GameEntity:
 
 # Lớp Game kế thừa từ GameEntity
 class Game(GameEntity):
+    
     def __init__(self):
         # Khởi tạo Pygame và các thành phần của nó
         pygame.mixer.pre_init(frequency=44100, size=-16, channels=2, buffer=512)
@@ -50,6 +55,9 @@ class Game(GameEntity):
         self.clock = pygame.time.Clock()  # Đồng hồ trò chơi để điều khiển tốc độ khung hình
         self.game_font = pygame.font.Font('04B_19.ttf', 40)  # Tạo font chữ cho điểm số
         self.game_active = False  # Trạng thái trò chơi (hoạt động hay không)
+        self.click_changeskin = False
+        self.click_changebg = False
+        self.option_menu = False
         self.score = 0  # Điểm hiện tại
         self.high_score = 0  # Điểm cao nhất
 
@@ -62,6 +70,7 @@ class Game(GameEntity):
 
         # Các đối tượng của trò chơi
         self.bird = Bird(self.screen)  # Khởi tạo đối tượng chim
+      
         self.pipe = Pipe(self.screen)  # Khởi tạo đối tượng ống
 
         # Vị trí của màn hình game over
@@ -77,6 +86,8 @@ class Game(GameEntity):
 
         self.spawnpipe = pygame.USEREVENT  # Sự kiện cho việc tạo ống
         pygame.time.set_timer(self.spawnpipe, 1000)  # Cập nhật mỗi giây
+
+  
 
     def score_display(self, game_state):
         """Hiển thị điểm số hiện tại và điểm cao nhất"""
@@ -97,12 +108,18 @@ class Game(GameEntity):
             self.screen.blit(high_score_surface, high_score_rect)
     
     
-    def changeskin_display(self):
-        changeskin_surface = self.game_font.render(f'Skin', True, YELLOW)  # Hiển thị phần thay đổi skin, mặc định là màu vàng
+    def button_skin_display(self):
+        if self.bird.bird_skin == 'yellow':
+            changeskin_surface = self.game_font.render(f'Skin', True, YELLOW)  # Hiển thị phần thay đổi skin, mặc định là màu vàng
+        if self.bird.bird_skin == 'blue':
+            changeskin_surface = self.game_font.render(f'Skin', True, BLUE)
+        if self.bird.bird_skin == 'red':
+            changeskin_surface = self.game_font.render(f'Skin', True, RED)
         changeskin_rect = changeskin_surface.get_rect(center=(432, 270))  # Vị trí của nút change skin
         self.screen.blit(changeskin_surface, changeskin_rect)  # Vẽ nút lên màn hình
 
-    def change_bg_display(self):
+    
+    def button_bg_display(self):
         change_bg_surface = self.game_font.render(f'Background', True, WHITE)  # Hiển thị phần thay đổi map
         change_bg_rect = change_bg_surface.get_rect(center=(432, 370))  # Vị trí của nút change map
         self.screen.blit(change_bg_surface, change_bg_rect)  # Vẽ nút lên màn hình
@@ -130,9 +147,34 @@ class Game(GameEntity):
         
         return True  # Không va chạm, trò chơi tiếp tục
 
+
+    def display_option_skin(self,click_changeskin):
+        if self.click_changeskin == True:
+            self.button_skin_display()
+
+            yellow_bird = pygame.image.load(r'assets/yellowbird-midflap.png')
+            yellow_bird = pygame.transform.scale2x(yellow_bird)
+            yellow_bird_rect = yellow_bird.get_rect(center = (216,370))
+            self.screen.blit(yellow_bird, yellow_bird_rect)
+
+            blue_bird = pygame.image.load(r'assets/bluebird-midflap.png')
+            blue_bird = pygame.transform.scale2x(blue_bird)
+            blue_bird_rect = blue_bird.get_rect(center = (432,370))
+            self.screen.blit(blue_bird, blue_bird_rect)
+
+            red_bird = pygame.image.load(r'assets/redbird-midflap.png')
+            red_bird = pygame.transform.scale2x(red_bird)
+            red_bird_rect = red_bird.get_rect(center = (648,370))
+            self.screen.blit(red_bird, red_bird_rect)
+            
+            
+
+    
     def run(self):
         """Vòng lặp chính của trò chơi"""
         while True:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -152,7 +194,38 @@ class Game(GameEntity):
                         self.bird.rect.center = (100, 200)  # Đặt lại vị trí chim
                         self.bird.bird_movement = 0
                         self.score = 0
+                    if event.key== pygame.K_ESCAPE:
+                        self.option_menu = False
+                        self.click_changeskin = False
+                        self.click_changebg = False
 
+
+                #button đổi skin // background
+                if event.type == pygame.MOUSEBUTTONDOWN and not self.game_active:
+                    if event.button == 1:
+                        if (392 < mouse_x < 472) and (250 <= mouse_y <= 290) and self.click_changeskin == False and self.click_changebg == False:
+                            self.click_changeskin = True
+                            self.option_menu = True
+
+                                                  
+                        if (312 < mouse_x < 547) and (350 <= mouse_y <= 391) and self.click_changebg == False and self.click_changeskin == False:
+                            self.click_changebg = True
+                            self.option_menu = True
+                            print(self.option_menu)
+                        
+                        if self.click_changeskin == True and self.option_menu == True:
+                            if (196 < mouse_x < 236) and (350 < mouse_y < 390):
+                                self.bird.bird_skin = 'yellow'
+                                print(self.bird.bird_skin)
+                            if (412 < mouse_x < 452) and (350 < mouse_y < 390):
+                                self.bird.bird_skin = 'blue'
+                                print(self.bird.bird_skin)
+                            if (628 < mouse_x < 668) and (350 < mouse_y < 390):
+                                self.bird.bird_skin = 'red'
+                                print(self.bird.bird_skin)
+
+
+                            
                 # Tạo ống mới
                 if event.type == self.spawnpipe and self.game_active:
                     self.pipe.pipe_list.extend(self.pipe.create_pipe())
@@ -167,7 +240,8 @@ class Game(GameEntity):
 
             # Vẽ nền
             self.screen.blit(self.bg_day, (0, 0))
-
+        
+            
             # Trạng thái game đang hoạt động
             if self.game_active:
                 rotated_bird, bird_rect = self.bird.update(self.bird.bird_movement, self.flap_sound)
@@ -180,12 +254,19 @@ class Game(GameEntity):
                 self.score += self.pipe.count_score(bird_rect)  # Cập nhật điểm
                 self.score_display('main game')
 
+
             # Trạng thái game over
             else:
-                self.high_score = self.update_score()  # Cập nhật điểm cao nhất
-                self.score_display('game_over')
-                self.changeskin_display()
-                self.change_bg_display()
+                if self.option_menu == False:
+                    self.high_score = self.update_score()  # Cập nhật điểm cao nhất
+                    self.score_display('game_over')
+                    self.button_skin_display()
+                    self.button_bg_display()
+                else:
+                    self.display_option_skin(self.click_changeskin)
+            
+                
+                
 
             # Cuộn nền dưới đất
             self.screen.blit(self.floor, (self.floor_x_pos, 700))
@@ -198,6 +279,8 @@ class Game(GameEntity):
             self.clock.tick(60)  # Điều khiển tốc độ khung hình
 
 # Lớp Bird kế thừa từ GameEntity
+
+
 class Bird(GameEntity):
     def __init__(self, screen):
         super().__init__(screen)
@@ -206,17 +289,21 @@ class Bird(GameEntity):
         self.bird_down = self.load_image(r'assets\yellowbird-downflap.png', (35, 30))
         self.bird_mid = self.load_image(r'assets\yellowbird-midflap.png', (35, 30))
         self.bird_up = self.load_image(r'assets\yellowbird-upflap.png', (35, 30))
+
         
         self.bird_list = [self.bird_down, self.bird_mid, self.bird_up]
         self.bird_index = 0  # Chỉ số của hình ảnh chim hiện tại
         self.bird = self.bird_list[self.bird_index]  # Chim hiện tại
         self.rect = self.bird.get_rect(center=(100, 200))  # Tạo hình chữ nhật cho chim
         self.bird_movement = 0  # Chuyển động của chim (vị trí dọc)
+        self.bird_skin='yellow'
+
+        self.bird, self.rect=self.skin_change(self.bird_skin)
 
     def bird_animation(self):
         """Hoạt động vỗ cánh của chim"""
-        new_bird = self.bird_list[self.bird_index]  # Chọn hình ảnh chim hiện tại
-        new_bird_rect = new_bird.get_rect(center=(100, self.rect.centery))  # Tạo hình chữ nhật cho chim
+        new_bird, new_bird_rect =self.skin_change(self.bird_skin)
+
         return new_bird, new_bird_rect
 
     def rotate_bird(self):
@@ -229,6 +316,27 @@ class Bird(GameEntity):
         rotated_bird = self.rotate_bird()
         self.rect.centery += self.bird_movement  # Cập nhật vị trí chim
         return rotated_bird, self.rect
+    
+    def skin_change(self ,bird_skin):
+        self.bird_skin=bird_skin
+        if self.bird_skin == 'yellow':
+            self.bird_down = self.load_image(r'assets\yellowbird-downflap.png', (35, 30))
+            self.bird_mid = self.load_image(r'assets\yellowbird-midflap.png', (35, 30))
+            self.bird_up = self.load_image(r'assets\yellowbird-upflap.png', (35, 30))
+        if self.bird_skin == 'blue':
+            self.bird_down = self.load_image(r'assets\bluebird-downflap.png', (35, 30))
+            self.bird_mid = self.load_image(r'assets\bluebird-midflap.png', (35, 30))
+            self.bird_up = self.load_image(r'assets\bluebird-upflap.png', (35, 30))
+        if self.bird_skin == 'red':
+            self.bird_down = self.load_image(r'assets\redbird-downflap.png', (35, 30))
+            self.bird_mid = self.load_image(r'assets\redbird-midflap.png', (35, 30))
+            self.bird_up = self.load_image(r'assets\redbird-upflap.png', (35, 30))
+        self.bird_list = [self.bird_down, self.bird_mid, self.bird_up]
+        self.bird_index = 0  # Chỉ số của hình ảnh chim hiện tại
+        self.bird = self.bird_list[self.bird_index]  # Chim hiện tại
+        self.rect = self.bird.get_rect(center=(100, self.rect.centery))  # Tạo hình chữ nhật cho chim
+        return self.bird , self.rect
+
 
 # Lớp Pipe kế thừa từ GameEntity
 class Pipe(GameEntity):
