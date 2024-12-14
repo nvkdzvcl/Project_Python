@@ -4,6 +4,7 @@ import random
 
 #màu sắc
 WHITE = (255,255,255)
+BLACK = (0,0,0)
 YELLOW = (255,255,0)
 BLUE = (0,0,255)
 RED = (255,0,0)
@@ -92,18 +93,18 @@ class Game(GameEntity):
     def score_display(self, game_state):
         """Hiển thị điểm số hiện tại và điểm cao nhất"""
         if game_state == 'main game':
-            score_surface = self.game_font.render(str(int(self.score)), True, (255, 255, 255))  # Hiển thị điểm
+            score_surface = self.game_font.render(str(int(self.score)), True, BLACK)  # Hiển thị điểm
             score_rect = score_surface.get_rect(center=(432, 70))
             self.screen.blit(score_surface, score_rect)  # Vẽ điểm lên màn hình
         
         if game_state == 'game_over':
             # Điểm hiện tại
-            score_surface = self.game_font.render(f'Score: {int(self.score)}', True, (255, 255, 255))
+            score_surface = self.game_font.render(f'Score: {int(self.score)}', True, BLACK)
             score_rect = score_surface.get_rect(center=(432, 70))
             self.screen.blit(score_surface, score_rect)
             
             # Điểm cao nhất
-            high_score_surface = self.game_font.render(f'Highscore: {int(self.high_score)}', True, (255, 255, 255))
+            high_score_surface = self.game_font.render(f'Highscore: {int(self.high_score)}', True, BLACK)
             high_score_rect = high_score_surface.get_rect(center=(432, 170))
             self.screen.blit(high_score_surface, high_score_rect)
     
@@ -120,7 +121,7 @@ class Game(GameEntity):
 
     
     def button_bg_display(self,y_position=370):
-        change_bg_surface = self.game_font.render(f'Background', True, WHITE)  # Hiển thị phần thay đổi map
+        change_bg_surface = self.game_font.render(f'Background', True, BLACK)  # Hiển thị phần thay đổi map
         change_bg_rect = change_bg_surface.get_rect(center=(432, y_position))  # Vị trí của nút change map
         self.screen.blit(change_bg_surface, change_bg_rect)  # Vẽ nút lên màn hình
 
@@ -261,25 +262,27 @@ class Game(GameEntity):
                         if self.click_changebg == True and self.option_menu == True:
                             if (45 <= mouse_x <= 255) and (105 <= mouse_y <= 375):
                                 print('bg1')
-                                self.bg_day = self.load_image('assets\background-day.png',(864,768))
+                                self.bg_day = self.load_image(r'assets\background-day.png',(864,768))
+                                
                             if (320 <= mouse_x <= 530) and (105 <= mouse_y <= 375):
-                                self.bg_day = self.load_image('assets\starbright.jpg',(864,768))
+                                self.bg_day = self.load_image(r'assets\starbright.jpg',(864,768))
                                 print('bg2')
 
+
                             if (595 <= mouse_x <= 805) and (105 <= mouse_y <= 375):
-                                self.bg_day = self.load_image('assets\frog.png',(864,768))
+                                self.bg_day = self.load_image(r'assets\frog.png',(864,768))
                                 print('bg3')
 
                             if (45 <= mouse_x <= 255) and (415 <= mouse_y <= 685):
-                                self.bg_day = self.load_image('assets\nhamay.png',(864,768))
+                                self.bg_day = self.load_image(r'assets\nhamay.png',(864,768))
                                 print('bg4')
 
                             if (320 <= mouse_x <= 530) and (415 <= mouse_y <= 685):
-                                self.bg_day = self.load_image('assets\thanhpho.png',(864,768))
+                                self.bg_day = self.load_image(r'assets\thanhpho.png',(864,768))
                                 print('bg5')
 
                             if (595 <= mouse_x <= 805) and (415 <= mouse_y <= 685):
-                                self.bg_day = self.load_image('assets\hoaanhdao.png',(864,768))
+                                self.bg_day = self.load_image(r'assets\hoaanhdao.png',(864,768))
                                 print('bg6')
 
 
