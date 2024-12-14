@@ -182,7 +182,7 @@ class Game(GameEntity):
             self.screen.blit(bg_2, bg_2_rect)
             pygame.draw.rect(self.screen, (0, 0, 0), bg_2_rect, 5)
 
-            bg_3 = pygame.image.load(r'assets/forest.png')
+            bg_3 = pygame.image.load(r'assets/frog.png')
             bg_3 = pygame.transform.scale( bg_3, (200,300))
             bg_3_rect =  bg_3.get_rect(center = (700,370))
             self.screen.blit( bg_3,  bg_3_rect)
