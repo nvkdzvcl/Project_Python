@@ -60,6 +60,8 @@ class Game(GameEntity):
         self.click_changebg = False
         self.option_menu = False
         self.score = 0  # Điểm hiện tại
+        self.volume='ON'
+        self.volume_mode=True
         self.high_score = 0  # Điểm cao nhất
 
         # Tải tài nguyên trò chơi (hình ảnh và âm thanh)
@@ -79,7 +81,7 @@ class Game(GameEntity):
         # Tải âm thanh
         self.flap_sound = pygame.mixer.Sound('sound\sfx_wing.wav')  # Âm thanh vỗ cánh
         self.hit_sound = pygame.mixer.Sound('sound\sfx_hit.wav')  # Âm thanh va chạm
-        self.score_sound = pygame.mixer.Sound('sound\sfx_point.wav')  # Âm thanh ghi điểm
+        
 
         # Thiết lập các sự kiện
         self.birdflap = pygame.USEREVENT  # Sự kiện cho hoạt động vỗ cánh của chim
@@ -124,6 +126,11 @@ class Game(GameEntity):
         change_bg_surface = self.game_font.render(f'Background', True, BLACK)  # Hiển thị phần thay đổi map
         change_bg_rect = change_bg_surface.get_rect(center=(432, y_position))  # Vị trí của nút change map
         self.screen.blit(change_bg_surface, change_bg_rect)  # Vẽ nút lên màn hình
+    def button_volume_display(self,y_position=480):
+        change_volume_surface = self.game_font.render(f'Volume:  '+ self.volume, True, BLACK)  # Hiển thị phần thay đổi map
+        change_volume_rect = change_volume_surface.get_rect(center=(432, y_position))  # Vị trí của nút change map
+        self.screen.blit(change_volume_surface, change_volume_rect)  # Vẽ nút lên màn hình
+
 
     def update_score(self):
         """Cập nhật và trả về điểm cao nhất"""
@@ -207,7 +214,16 @@ class Game(GameEntity):
             self.screen.blit(bg_6,  bg_6_rect)
             pygame.draw.rect(self.screen, (0, 0, 0), bg_6_rect, 5)
 
-    
+    def volume_change(self, volume):
+        if self.volume=='OFF':
+            self.hit_sound.stop()
+            self.flap_sound.stop()
+            self.pipe.score_sound.stop()
+        if self.volume=='OFF':
+            self.hit_sound.play()
+            self.flap_sound.play()
+            self.pipe.score_sound.play()
+        return self.hit_sound, self.flap_sound, self.pipe.score_sound
     def run(self):
         """Vòng lặp chính của trò chơi"""
         while True:
@@ -226,7 +242,7 @@ class Game(GameEntity):
                         self.flap_sound.play()  # Phát âm thanh vỗ cánh
                     
                     # Khi nhấn phím cách trong trạng thái game over, khởi động lại trò chơi
-                    if event.key == pygame.K_SPACE and not self.game_active:
+                    if event.key == pygame.K_SPACE and not self.game_active :
                         self.game_active = True
                         self.pipe.pipe_list.clear()  # Xóa các ống
                         self.bird.rect.center = (100, 200)  # Đặt lại vị trí chim
@@ -260,6 +276,7 @@ class Game(GameEntity):
                                 self.bird.bird_skin = 'red'
 
                         if self.click_changebg == True and self.option_menu == True:
+                            
                             if (45 <= mouse_x <= 255) and (105 <= mouse_y <= 375):
                                 print('bg1')
                                 self.bg_day = self.load_image(r'assets\background-day.png',(864,768))
@@ -285,13 +302,18 @@ class Game(GameEntity):
                                 self.bg_day = self.load_image(r'assets\hoaanhdao.png',(864,768))
                                 print('bg6')
 
-
-
-
+                        if (496<mouse_x<546) and (460<=mouse_y<=500)and self.click_changeskin == False and self.click_changebg == False:
+                            self.volume_mode =not self.volume_mode
+                            if self.volume_mode==True:
+                                self.volume='ON'
+                            if self.volume_mode==False:
+                                self.volume='OFF'
+                            print(self.volume_mode)
+                
                 # Tạo ống mới
                 if event.type == self.spawnpipe and self.game_active:
                     self.pipe.pipe_list.extend(self.pipe.create_pipe())
-
+                
                 # Hoạt động vỗ cánh của chim
                 if event.type == self.birdflap:
                     if self.bird.bird_index < 2:
@@ -301,11 +323,13 @@ class Game(GameEntity):
                     self.bird.bird, self.bird.rect = self.bird.bird_animation()
 
             # Vẽ nền
+                       
             self.screen.blit(self.bg_day, (0, 0))
         
-            
+            self.hit_sound, self.flap_sound, self.pipe.score_sound =self.volume_change(self.volume)
             # Trạng thái game đang hoạt động
             if self.game_active:
+               
                 rotated_bird, bird_rect = self.bird.update(self.bird.bird_movement, self.flap_sound)
                 self.screen.blit(rotated_bird, bird_rect)
                 
@@ -315,18 +339,24 @@ class Game(GameEntity):
                 self.game_active = self.check_collision(bird_rect)  # Kiểm tra va chạm
                 self.score += self.pipe.count_score(bird_rect)  # Cập nhật điểm
                 self.score_display('main game')
+                
 
 
             # Trạng thái game over
             else:
+                
                 if self.option_menu == False:
                     self.high_score = self.update_score()  # Cập nhật điểm cao nhất
                     self.score_display('game_over')
                     self.button_skin_display()
                     self.button_bg_display()
+                    self.button_volume_display()
                 else:
                     self.display_option_skin(self.click_changeskin)
                     self.display_option_bg(self.click_changebg)
+                
+
+                   
                 
                 
 
@@ -409,6 +439,7 @@ class Pipe(GameEntity):
         
         self.pipe_list = []  # Danh sách các ống
         self.pipe_height = [200, 250, 300, 350, 400]  # Các độ cao ngẫu nhiên cho ống
+        self.score_sound=pygame.mixer.Sound('sound\sfx_point.wav')
 
     def create_pipe(self):
         """Tạo một cặp ống"""
@@ -441,7 +472,7 @@ class Pipe(GameEntity):
             if not passed and pipe.right < bird_rect.left:  # Nếu chim vượt qua ống
                 self.pipe_list[i] = (pipe, True)
                 score += 0.5  # Cộng thêm 0.5 điểm
-                pygame.mixer.Sound('sound\sfx_point.wav').play()  # Phát âm thanh ghi điểm
+                self.score_sound.play()  # Phát âm thanh ghi điểm
         return score
 
 # Chạy trò chơi
