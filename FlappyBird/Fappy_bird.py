@@ -8,7 +8,7 @@ BLACK = (0,0,0)
 YELLOW = (255,255,0)
 BLUE = (0,0,255)
 RED = (255,0,0)
-
+volume='ON'
 
 #skin_color_flag
 skin = 'yellow'
@@ -60,7 +60,6 @@ class Game(GameEntity):
         self.click_changebg = False
         self.option_menu = False
         self.score = 0  # Điểm hiện tại
-        self.volume='ON'
         self.volume_mode=True
         self.high_score = 0  # Điểm cao nhất
 
@@ -127,7 +126,7 @@ class Game(GameEntity):
         change_bg_rect = change_bg_surface.get_rect(center=(432, y_position))  # Vị trí của nút change map
         self.screen.blit(change_bg_surface, change_bg_rect)  # Vẽ nút lên màn hình
     def button_volume_display(self,y_position=480):
-        change_volume_surface = self.game_font.render(f'Volume:  '+ self.volume, True, BLACK)  # Hiển thị phần thay đổi map
+        change_volume_surface = self.game_font.render(f'Volume:  '+ volume, True, BLACK)  # Hiển thị phần thay đổi map
         change_volume_rect = change_volume_surface.get_rect(center=(432, y_position))  # Vị trí của nút change map
         self.screen.blit(change_volume_surface, change_volume_rect)  # Vẽ nút lên màn hình
 
@@ -142,13 +141,15 @@ class Game(GameEntity):
         """Kiểm tra va chạm với ống và biên của màn hình"""
         for pipe, passed in self.pipe.pipe_list:
             if bird_rect.colliderect(pipe):  # Nếu chim va chạm với ống
-                self.hit_sound.play()  # Phát âm thanh va chạm
+                if volume=='ON':
+                    self.hit_sound.play()  # Phát âm thanh va chạm
                 if bird_rect.centery > 700:  # Nếu chim quá gần đáy, giảm vị trí
                     bird_rect.centery -= 9
                 return False  # Dừng trò chơi (chim chết)
         
         if bird_rect.top <= -75 or bird_rect.bottom >= 700:  # Kiểm tra va chạm với biên trên và dưới màn hình
-            self.hit_sound.play()  # Phát âm thanh va chạm
+            if volume=='ON':
+                self.hit_sound.play()  # Phát âm thanh va chạm
             bird_rect.centery = 700  # Đặt lại vị trí chim
             pygame.transform.flip(self.bird.bird, True, False)  # Lật chim khi chết
             return False  # Dừng trò chơi (chim chết)
@@ -214,16 +215,16 @@ class Game(GameEntity):
             self.screen.blit(bg_6,  bg_6_rect)
             pygame.draw.rect(self.screen, (0, 0, 0), bg_6_rect, 5)
 
-    def volume_change(self, volume):
-        if self.volume=='OFF':
-            self.hit_sound.stop()
-            self.flap_sound.stop()
-            self.pipe.score_sound.stop()
-        if self.volume=='OFF':
-            self.hit_sound.play()
-            self.flap_sound.play()
-            self.pipe.score_sound.play()
-        return self.hit_sound, self.flap_sound, self.pipe.score_sound
+    # def volume_change(self, volume):
+    #     if volume=='OFF':
+    #         self.hit_sound.stop()
+    #         self.flap_sound.stop()
+    #         self.pipe.score_sound.stop()
+    #     if volume=='OFF':
+    #         self.hit_sound.play()
+    #         self.flap_sound.play()
+    #         self.pipe.score_sound.play()
+    #     return self.hit_sound, self.flap_sound, self.pipe.score_sound
     def run(self):
         """Vòng lặp chính của trò chơi"""
         while True:
@@ -239,7 +240,9 @@ class Game(GameEntity):
                     if event.key == pygame.K_SPACE and self.game_active:
                         self.bird.bird_movement = 0  # Đặt lại chuyển động của chim
                         self.bird.bird_movement = -8  # Vỗ cánh (di chuyển lên)
-                        self.flap_sound.play()  # Phát âm thanh vỗ cánh
+                        global volume
+                        if volume=='ON':
+                            self.flap_sound.play()  # Phát âm thanh vỗ cánh
                     
                     # Khi nhấn phím cách trong trạng thái game over, khởi động lại trò chơi
                     if event.key == pygame.K_SPACE and not self.game_active :
@@ -305,15 +308,16 @@ class Game(GameEntity):
                         if (496<mouse_x<546) and (460<=mouse_y<=500)and self.click_changeskin == False and self.click_changebg == False:
                             self.volume_mode =not self.volume_mode
                             if self.volume_mode==True:
-                                self.volume='ON'
+                                volume='ON'
                             if self.volume_mode==False:
-                                self.volume='OFF'
+                                volume='OFF'
                             print(self.volume_mode)
+                            print(volume)
                 
                 # Tạo ống mới
                 if event.type == self.spawnpipe and self.game_active:
                     self.pipe.pipe_list.extend(self.pipe.create_pipe())
-                
+                  
                 # Hoạt động vỗ cánh của chim
                 if event.type == self.birdflap:
                     if self.bird.bird_index < 2:
@@ -326,7 +330,7 @@ class Game(GameEntity):
                        
             self.screen.blit(self.bg_day, (0, 0))
         
-            self.hit_sound, self.flap_sound, self.pipe.score_sound =self.volume_change(self.volume)
+            # self.hit_sound, self.flap_sound, self.pipe.score_sound =self.volume_change(volume)
             # Trạng thái game đang hoạt động
             if self.game_active:
                
@@ -472,7 +476,8 @@ class Pipe(GameEntity):
             if not passed and pipe.right < bird_rect.left:  # Nếu chim vượt qua ống
                 self.pipe_list[i] = (pipe, True)
                 score += 0.5  # Cộng thêm 0.5 điểm
-                self.score_sound.play()  # Phát âm thanh ghi điểm
+                if volume=='ON':
+                    self.score_sound.play()  # Phát âm thanh ghi điểm
         return score
 
 # Chạy trò chơi
