@@ -427,7 +427,7 @@ class Bird(GameEntity):
             self.bird_mid = self.load_image(r'assets\redbird-midflap.png', (35, 30))
             self.bird_up = self.load_image(r'assets\redbird-upflap.png', (35, 30))
         self.bird_list = [self.bird_down, self.bird_mid, self.bird_up]
-        self.bird_index = 0  # Chỉ số của hình ảnh chim hiện tại
+        self.bird_index = self.bird_index  # Chỉ số của hình ảnh chim hiện tại
         self.bird = self.bird_list[self.bird_index]  # Chim hiện tại
         self.rect = self.bird.get_rect(center=(100, self.rect.centery))  # Tạo hình chữ nhật cho chim
         return self.bird , self.rect
